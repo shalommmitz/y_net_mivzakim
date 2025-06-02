@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+
+import requests, os, json, yaml
+from bs4 import BeautifulSoup
+from datetime import datetime
+RTL_START = u'\u202B'
+RTL_END = u'\u202C'
+
+url = 'https://www.y net.co.il/news/category/184'
+
+def is_skip(text):
+    #Example:   to_exclude = ["NATO", "ליגת האלופות"]
+    to_exclude = []
+    exclude = False
+    for t in to_exclude:
+        if t in text: exclude = True
+    return exclude
+
+def html_to_dict(url):
+    # Fetch the HTML content from the URL
+    response = requests.get(url)
+    html_content = response.text
+    # Parse the HTML content with BeautifulSoup
+    soup = BeautifulSoup(html_content, 'html.parser')
+    # Define a helper function to convert tags into a dictionary
+    def parse_tag(tag):
+        tag_dict = {}
+        # Extract the tag name
+        tag_dict['tag'] = tag.name
+        # Extract attributes, if any
+        if tag.attrs:
+            tag_dict['attributes'] = tag.attrs
+        
+        # Extract text content, if any
+        if tag.string:
+            tag_dict['text'] = tag.string.strip()
+        
+        # Recurse into child tags (if any)
+        children = []
+        for child in tag.children:
+            if isinstance(child, str):
+                continue  # Skip string nodes (text content)
+            children.append(parse_tag(child))
+        
+        if children:
+            tag_dict['children'] = children
+        
+        return tag_dict
+    # Convert the entire document (or specific part) to a dictionary
+    root_dict = parse_tag(soup)
+    return root_dict
+
+def print_item(user_input):
+    def p(item_num):
+        i = int(item_num.strip())-1
+        try:
+            print(RTL_START+ texts[i] +RTL_END)
+        except:
+            pass
+
+    if "," in user_input:
+        for item_num in user_input.split(","):
+            p(item_num)
+            print()
+        exit()
+    p(user_input)
+    return
+
+def show(d, l, path):
+    path_printable = ", ".join(path)
+    type_of_d = str(type(d)).split("'")[1]
+    match type_of_d:
+        case "str" | "int":
+           print(f"   '{d}'")
+        case "list":
+           def get_ans(d):
+               print(f'Level {l}. type {type_of_d}. Path {path_printable}')
+               print("   len", len(d))
+               for i, item in enumerate(d):
+                   if type(item)==type({}):
+                       if "tag" in item.keys():
+                           print("   ", i+1, d[i]["tag"], len(str(d[i])))
+               return input("num of element (start w/1) or 'Enter' to return > ")
+           ans = get_ans(d)
+           while ans!='': 
+               new_path = path + [str(int(ans)-1)]
+               show(d[int(ans)-1], l+1, new_path)
+               ans = get_ans(d)
+        case "dict":
+           def get_ans(keys):
+               print(f'Level {l}. type {type_of_d}. Path {", ".join(path)}')
+               print("keys:") 
+               for idx, key in enumerate(keys):
+                   print("   ", idx+1, key)
+               return input("p to print, num of key or 'Enter' to return > ")
+
+           keys = list(d.keys())
+           if "tag" in keys:
+              if type(d["tag"])==type(""):
+                  print("   Tag:", d["tag"])
+                  keys.remove("tag")
+           ans = get_ans(keys)
+           E
+           while ans!="":
+               match ans:
+                  case "p":
+                     print(d)
+                  case _:
+                      key = keys[int(ans)-1]
+                      new_path = path + ['"'+key+'"']
+                      show(d[key], l+1, new_path)
+               ans = get_ans(keys)
+        case _:
+           print("Unknown type:", type_of_d)
+html_dict = html_to_dict(url)
+path  = ["children", 0, "children", 1, "children", 14, "children", 0]
+path += ["children", 0, "children", 5, "children", 0,  "children", 4]
+path += ["children", 0, "children", 0, "children", 0,  "children", 0]
+path += ["children", 0, "children", 0, "children"]
+
+path  = ["children", 0, "children", 1, "children", 14, "children", 0]
+path += ["children", 0, "children", 5, "children", 0, "children", 4 ]
+path += ["children", 0, "children", 0, "children", 0, "children", 0 ]
+path += [ "children", 1, "text"]
+
+for p in path:
+    #print("      ", p)
+    html_dict = html_dict[p]
+#show(html_dict, 0, [])
+#exit()
+items = html_dict.split("items")[1][2:-2]
+items = items.split("isLTR")[0][:-2]
+
+items = json.loads(items)
+
+time_stamps = []
+headers = []
+texts = []
+for idx, item in enumerate(items):
+    try:
+        time_stamp = item["date"]
+        time_stamps.append(time_stamp)
+    except:
+        print("Getting time stamp failed")
+    try:
+        header = item["title"]
+        headers.append(header)
+    except:
+        print("Failed")
+    try:
+        text = item["text"]
+        texts.append(text)
+    except:
+        print("Failed")
+last_seen_time_stamp = None
+if os.path.isfile("last_seen_time_stamp.yaml"):
+    last_seen_time_stamp_str = yaml.safe_load(open("last_seen_time_stamp.yaml"))
+    _ = last_seen_time_stamp_str.replace('Z', '+00:00')
+    last_seen_time_stamp = datetime.fromisoformat(_)
+for i in range(len(time_stamps)):
+    time_stamp_str = time_stamps[i]
+    time_stamp = datetime.fromisoformat(time_stamp_str.replace('Z', '+00:00'))
+    if last_seen_time_stamp:
+        if time_stamp<last_seen_time_stamp:
+            continue
+    if is_skip(headers[i]): 
+        continue
+    time_stamp_disp = time_stamp.strftime("%d%b %H:%M")
+    header = RTL_START+ headers[i] +RTL_END
+    print(i+1, time_stamp_disp, header)
+yaml.safe_dump(time_stamps[0], open("last_seen_time_stamp.yaml", 'w'))
+ans = input("Num of item, numbers seprated by commas, or 'Enter' to exit >")
+while ans !="":
+    print_item(ans)
+    ans = input(" >")
+
