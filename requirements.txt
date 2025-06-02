@@ -1,0 +1,3 @@
+yaml
+bs4
+requests
