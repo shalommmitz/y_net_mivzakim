@@ -3,6 +3,7 @@
 import requests, os, json, yaml
 from bs4 import BeautifulSoup
 from datetime import datetime
+from display_heb_on_term import display_rtl_on_terminal
 RTL_START = u'\u202B'
 RTL_END = u'\u202C'
 
@@ -53,20 +54,16 @@ def html_to_dict(url):
 def print_item(user_input):
     def p(item_num):
         i = int(item_num.strip())-1
-        try:
-            print(RTL_START+ texts[i] +RTL_END)
-        except:
-            pass
-
+        display_rtl_on_terminal(texts[i])
     if "," in user_input:
         for item_num in user_input.split(","):
             p(item_num)
-            print()
         exit()
     p(user_input)
     return
 
-def show(d, l, path):
+def interactive_explorer_of_data_struct(d, l, path):
+    # Interactivly explore HTML page that was converted to Python dicts/list Hybrid
     path_printable = ", ".join(path)
     type_of_d = str(type(d)).split("'")[1]
     match type_of_d:
@@ -84,7 +81,7 @@ def show(d, l, path):
            ans = get_ans(d)
            while ans!='': 
                new_path = path + [str(int(ans)-1)]
-               show(d[int(ans)-1], l+1, new_path)
+               interactive_explorer_of_data_struct(d[int(ans)-1], l+1, new_path)
                ans = get_ans(d)
         case "dict":
            def get_ans(keys):
@@ -108,16 +105,13 @@ def show(d, l, path):
                   case _:
                       key = keys[int(ans)-1]
                       new_path = path + ['"'+key+'"']
-                      show(d[key], l+1, new_path)
+                      interactive_explorer_of_data_struct(d[key], l+1, new_path)
                ans = get_ans(keys)
         case _:
            print("Unknown type:", type_of_d)
-html_dict = html_to_dict(url)
-path  = ["children", 0, "children", 1, "children", 14, "children", 0]
-path += ["children", 0, "children", 5, "children", 0,  "children", 4]
-path += ["children", 0, "children", 0, "children", 0,  "children", 0]
-path += ["children", 0, "children", 0, "children"]
 
+
+html_dict = html_to_dict(url)
 path  = ["children", 0, "children", 1, "children", 14, "children", 0]
 path += ["children", 0, "children", 5, "children", 0, "children", 4 ]
 path += ["children", 0, "children", 0, "children", 0, "children", 0 ]
@@ -126,8 +120,10 @@ path += [ "children", 1, "text"]
 for p in path:
     #print("      ", p)
     html_dict = html_dict[p]
-#show(html_dict, 0, [])
+
+#interactive_explorer_of_data_struct(html_dict, 0, [])
 #exit()
+
 items = html_dict.split("items")[1][2:-2]
 items = items.split("isLTR")[0][:-2]
 
@@ -168,7 +164,9 @@ for i in range(len(time_stamps)):
     time_stamp_disp = time_stamp.strftime("%d%b %H:%M")
     header = RTL_START+ headers[i] +RTL_END
     print(i+1, time_stamp_disp, header)
+
 yaml.safe_dump(time_stamps[0], open("last_seen_time_stamp.yaml", 'w'))
+
 ans = input("Num of item, numbers seprated by commas, or 'Enter' to exit >")
 while ans !="":
     print_item(ans)
