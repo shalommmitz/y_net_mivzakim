@@ -18,6 +18,46 @@ Environment: Needs Python 3.x on Linux
    - Press "Enter" to exit
    - Enter a number to see the text associated with this Number
    - Enter two or more numbers, separated by comma(s). The text associated with the numbers entered will be shown and the sw will exit
+  # Start recording everything in this terminal
+  script
+
+## Typical installation flow
+
+```
+  # Change to the home directory
+  cd
+
+  # Remove old installation of our sw
+  rm -rf y_net_mivzakim
+
+  # Fetch a copy of our sw from github
+  git clone https://github.com/shalommmitz/y_net_mivzakim
+
+  # Make the newly-fetched folder our current folder
+  cd y_net_mivzakim/
+ 
+  # Fix the URL by removing the "space" character
+  sed -i 's/y ne/yne/' fetch
+
+  # Needed only once: install pip and venv machine wide
+  sudo apt install python3-pip python3-venv
+
+  # Create the virtual environment. This actually create a sub-folder named 'venv'
+  python3 -m venv venv
+
+  # Activate the virtual environment. i
+  #This means any Python packages we install using pip will be installed only for this project
+  . v
+
+  # Install the needed packages
+  pip install -r requirements.txt 
+
+  # Make our script executable, so we can run it
+  chmod +x fetch
+
+  # Run the script
+  ./fetch
+```
 
 ## License
 
