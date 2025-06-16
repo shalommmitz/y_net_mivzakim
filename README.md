@@ -1,62 +1,85 @@
-# Extract and Print-to-the-Terminal MIVZAKIM from Y NET
+# y_net_mivzakim
 
-## Installation 
+A Python utility to fetch and process news headlines ("מבזקים") from the ynet's site. Designed for quick and structured access to the most recent headlines, optionally filtering out irrelevant ones based on exclusion terms.
 
-Environment: Needs Python 3.x on Linux
+## Features
 
-1. Create and activate a virtual env (optional): python -m venv venv; . v
-2. Install dependencies: Run `pip install -r requirements.txt`
-3. Exclude MIVZAKIM that contain certain keywords: Create the file `terms_to_exclude.txt` and put keywords, each in it's own line.
+- Downloads the latest headlines
+- Filters out unwanted headlines using user-defined keywords
+- Command-line interface to see more details on choosen items
+- Customizable exclusion terms list
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/shalommmitz/y_net_mivzakim.git
+   cd y_net_mivzakim
+   ```
+
+2. (Optional but recommended) Create a virtual environment:
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-1. Run the sw: `./fetch`
-2. The new (I.e., not yet viewed) MIVZAKIM will be shown
-3. At the prompt you have 4 options:
-   
-   - Press "Enter" to refresh
-   - Enter a number to see the text associated with this Number
-   - Enter two or more numbers, separated by comma(s). The text associated with the numbers entered will be shown and the sw will exit
-   - Enter 'q' to quit the script
+1. Make sure you're inside the project directory:
 
-## Typical installation flow
+   ```bash
+   cd y_net_mivzakim
+   ```
+
+2. Run the main script:
+
+   ```bash
+   python3 ynet_mivzakim.py
+   ```
+
+3. The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
+
+4. Hit "Enter" to refresh ,or list of item-number to see details. `q` to quit
+   - `headlines.txt`: Filtered list of headlines
+   - `raw.txt`: Complete list before filtering
+
+## Configuration: Exclude Terms
+
+To filter out certain types of news, add exclusion terms to `exclude.txt`, one per line. Example:
 
 ```
-  # Change to the home directory
-  cd
+ספורט
+פרסומת
+פאניקה
+מזג האוויר
+```
 
-  # Remove old installation of our sw
-  rm -rf y_net_mivzakim
+These terms will be matched (case-sensitive) against the headlines.
 
-  # Fetch a copy of our sw from github
-  git clone https://github.com/shalommmitz/y_net_mivzakim
+## Typical Flow
 
-  # Make the newly-fetched folder our current folder
-  cd y_net_mivzakim/
- 
-  # Fix the URL by removing the "space" character
-  sed -i 's/y ne/yne/' fetch
-
-  # Needed only once: install pip and venv machine wide
-  sudo apt install python3-pip python3-venv
-
-  # Create the virtual environment. This actually create a sub-folder named 'venv'
-  python3 -m venv venv
-
-  # Activate the virtual environment. i
-  # This means any Python packages installed using pip will be installed only for this project
-  . v
-
-  # Install the needed packages
-  pip install -r requirements.txt 
-
-  # Make our script executable, so we can run it
-  chmod +x fetch
-
-  # Run the script
-  ./fetch
+```bash
+git clone https://github.com/shalommmitz/y_net_mivzakim.git
+cd y_net_mivzakim
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 ynet_mivzakim.py
+cat headlines.txt
 ```
 
 ## License
 
-   MIT
+MIT License. See `LICENSE` file for details.
+
+## Contributing
+
+Pull requests and suggestions are welcome!
