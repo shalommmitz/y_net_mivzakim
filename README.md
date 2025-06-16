@@ -6,9 +6,8 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
 
 - Downloads the latest headlines
 - Filters out unwanted headlines using user-defined keywords
-- Command-line interface to see more details on chosen items
+- Command-line interface to see more details on choosen items
 - Customizable exclusion terms list
-- Two front ends: fetch: simple CLI and mivzakim: elegant TUI (Terminal User Interface)
 
 ## Installation
 
@@ -32,7 +31,7 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
    pip install -r requirements.txt
    ```
 
-## Using the "Elegant TUI" version:
+## Usage
 
 1. Make sure you're inside the project directory:
 
@@ -40,63 +39,27 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
    cd y_net_mivzakim
    ```
 
-2. Activate the virtual environment:
+2. Run the main script:
 
    ```bash
-   . v
-   ```
-   
-3. Run the main script:
-
-   ```bash
-   ./mivzakim
+   python3 ynet_mivzakim.py
    ```
 
-   The items not-yet-seen will be displayed.
+3. The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
 
-4. Click on the down-arrow next to each item to see the full text
-
-5. Press 'r' to refresh. Press 'q' to quit
-
-
-## Using the "Pure CLI" version:
-
-1. Make sure you're inside the project directory:
-
-   ```bash
-   cd y_net_mivzakim
-   ```
-
-2. Activate the virtual environment:
-
-   ```bash
-   . v
-   ```
-   
-3. Run the main script:
-
-   ```bash
-   ./fetch
-   ```
-  
-   or
-   ```bash
-   python fetch
-   ```
-
-
-   The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
-
-4. Hit "Enter" to refresh ,or list of item-number to see details. `q` to quit
+   - Hit "Enter" to refresh
+   - Enter a list of item-number (coma separed) to see details.
+   - `q` to quit
 
 ## Configuration: Exclude Terms
 
-To filter out certain types of news, add exclusion terms to the file `terms_to_exclude.txt`, one per line. Example:
+To filter out certain types of news, add exclusion terms to `exclude.txt`, one per line. Example:
 
 ```
 ספורט
 פרסומת
-NBA
+פאניקה
+מזג האוויר
 ```
 
 These terms will be matched (case-sensitive) against the headlines.
