@@ -19,12 +19,24 @@ def send_to_terminal(text: str):
                 break_long_words=False,
                 break_on_hyphens=False
             )
-            for wrapped_line in wrapped_lines:
-                visual = get_display(wrapped_line)
+            for line in wrapped_lines:
+                #print("b", line)
+                start_of_line_natrual_chars = ""
+                while get_char_type(line[0])=="natrual":
+                    start_of_line_natrual_chars += line[0]
+                    line = line[1:]
+                end_of_line_natrual_chars = ""
+                while get_char_type(line[-1])=="natrual":
+                    end_of_line_natrual_chars += line[-1]
+                    line = line[:-1]
+                line = end_of_line_natrual_chars + line + start_of_line_natrual_chars
+                visual = get_display(line)
+                #print("a", visual)
                 visual_len = len(visual)
                 padding = max(0, term_width - visual_len)
-                # Force RTL rendering by wrapping with RTL_START ... PDF
-                print(' ' * padding + RTL_START + visual[::-1] + PDF)
+                print(' ' * padding + visual[::-1] )
+           #     # Force RTL rendering by wrapping with RTL_START ... PDF
+           #    print(' ' * padding + RTL_START + visual[::-1] + PDF)
         print()
 
 
