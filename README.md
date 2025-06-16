@@ -4,22 +4,20 @@
 
 Environment: Needs Python 3.x on Linux
 
-1. Optional: Create and activate a virtual env
-2. Run: `pip install -r requirements.txt`
-3. Fix the URL in the file `fetch` by removing the redundant space character
-4. Optional: Add terms in the list "to_exclude" in the file `fetch`. MIVZAKIM contained this term will be excluded (I.e., not displayed).
+1. Create and activate a virtual env (optional): python -m venv venv; . v
+2. Install dependencies: Run `pip install -r requirements.txt`
+3. Exclude MIVZAKIM that contain certain keywords: Create the file `terms_to_exclude.txt` and put keywords, each in it's own line.
 
 ## Usage
 
 1. Run the sw: `./fetch`
 2. The new (I.e., not yet viewed) MIVZAKIM will be shown
-3. At the prompt you have 3 options:
+3. At the prompt you have 4 options:
    
-   - Press "Enter" to exit
+   - Press "Enter" to refresh
    - Enter a number to see the text associated with this Number
    - Enter two or more numbers, separated by comma(s). The text associated with the numbers entered will be shown and the sw will exit
-  # Start recording everything in this terminal
-  script
+   - Enter 'q' to quit the script
 
 ## Typical installation flow
 
@@ -46,7 +44,7 @@ Environment: Needs Python 3.x on Linux
   python3 -m venv venv
 
   # Activate the virtual environment. i
-  #This means any Python packages we install using pip will be installed only for this project
+  # This means any Python packages installed using pip will be installed only for this project
   . v
 
   # Install the needed packages
