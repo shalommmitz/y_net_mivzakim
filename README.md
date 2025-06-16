@@ -47,9 +47,9 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
 
 3. The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
 
-4. Hit "Enter" to refresh ,or list of item-number to see details. `q` to quit
-   - `headlines.txt`: Filtered list of headlines
-   - `raw.txt`: Complete list before filtering
+   - Hit "Enter" to refresh
+   - Enter a list of item-number (coma separed) to see details.
+   - `q` to quit
 
 ## Configuration: Exclude Terms
 
