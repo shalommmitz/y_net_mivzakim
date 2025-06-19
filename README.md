@@ -84,10 +84,14 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
    python fetch
    ```
 
-
    The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
 
-4. Hit "Enter" to refresh ,or list of item-number to see details. `q` to quit
+<<<<<<< HEAD
+4. Interaction with the sw:
+
+   - Hit "Enter" to refresh
+   - Enter a list of item-number (coma separed) to see details.
+   - `q` to quit
 
 ## Configuration: Exclude Terms
 
