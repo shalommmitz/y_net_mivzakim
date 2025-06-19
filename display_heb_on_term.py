@@ -5,7 +5,48 @@ from bidi.algorithm import get_display
 RTL_START = u'\u202B'
 PDF = '\u202C'  # Pop Directional Formatting
 
+def get_text_as_lines(text, term_width):
+
+    paragraphs = text.strip().split('\n\n')
+
+    output_lines = []
+    for paragraph in paragraphs:
+        lines = paragraph.split('\n')
+        for line in lines:
+            wrapped_lines = textwrap.wrap(
+                line,
+                width=term_width,
+                break_long_words=False,
+                break_on_hyphens=False
+            )
+            for line in wrapped_lines:
+                #print("b", line)
+                start_of_line_natrual_chars = ""
+                while get_char_type(line[0])=="natrual":
+                    start_of_line_natrual_chars += line[0]
+                    line = line[1:]
+                end_of_line_natrual_chars = ""
+                while get_char_type(line[-1])=="natrual":
+                    end_of_line_natrual_chars += line[-1]
+                    line = line[:-1]
+                line = end_of_line_natrual_chars + line + start_of_line_natrual_chars
+                visual = get_display(line)
+                #print("a", visual)
+                visual_len = len(visual)
+                padding = max(0, term_width - visual_len)
+                output_lines.append(' ' * padding + visual[::-1] )
+           #     # Force RTL rendering by wrapping with RTL_START ... PDF
+           #    print(' ' * padding + RTL_START + visual[::-1] + PDF)
+        output_lines.append("")
+    return output_lines
+
 def send_to_terminal(text: str):
+    term_width = shutil.get_terminal_size((80, 20)).columns
+    lines = get_text_as_lines(text, term_width)
+    for line in lines:
+        print(line)
+        
+def old_send_to_terminal(text: str):
     term_width = shutil.get_terminal_size((80, 20)).columns
     paragraphs = text.strip().split('\n\n')
 

@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import json
+from pathlib import Path
+
+from rich.text import Text
+
+from textual.app import App, ComposeResult
+from textual.widgets import Header, Footer, Tree
+from textual.widgets.tree import TreeNode
+
+from fetch_items import fetch_items, get_formated_headers_and_texts
+from display_heb_on_term import get_text_as_lines
+
+
+url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
+
+
+class Mivzakim(App):
+
+    BINDINGS = [
+        ("q", "quit", "Quit"),
+        ("r", "refresh", "Refresh"),
+        ("c", "clear", "Clear"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        yield Header(show_clock=True)
+        yield Footer()
+        yield Tree("Mivzakim")
+
+
+    def on_mount(self) -> None:
+        """Get items when the app starts."""
+        #time_stamps, headers, texts = fetch_items(url)
+        #self.json_data = { "time_stams": time_stamps, "headers": headers, "texts": texts }
+        formated_headers, formated_texts = get_formated_headers_and_texts(enumerate=False)
+        tree = self.query_one(Tree)
+        for idx, header in enumerate(formated_headers):
+           node = tree.root.add(header)
+           text_lines = get_text_as_lines(formated_texts[idx], 60)
+           for line in text_lines:
+               node.add_leaf(line)
+        tree.show_root = False
+        tree.show_guides = False
+
+
+    def action_quit(self) -> None:
+        """Quit the program."""
+        exit()
+        
+    def action_refresh(self) -> None:
+        """Clear the tree (remove all nodes)."""
+        tree = self.query_one(Tree)
+        tree.clear()
+        self.on_mount()
+
+    def action_clear(self) -> None:
+        """Clear the tree (remove all nodes)."""
+        tree = self.query_one(Tree)
+        tree.clear()
+
+
+if __name__ == "__main__":
+    app = Mivzakim()
+    app.run()

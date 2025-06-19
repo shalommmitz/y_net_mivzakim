@@ -1,9 +1,59 @@
 #!/usr/bin/env python3
 
-import requests, json
+import os, yaml, requests, json
+from datetime import datetime
 from bs4 import BeautifulSoup
+
 RTL_START = u'\u202B'
 RTL_END = u'\u202C'
+
+
+url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
+
+
+_ = open("terms_to_exclude.txt", encoding="utf-8").read().split("\n")
+_ = [ term.strip() for term in _ ]
+to_exclude = [ term for term in _ if term!="" ]
+
+def is_skip(text, to_exclude):
+    exclude = False
+    for t in to_exclude:
+        if t in text: exclude = True
+    return exclude
+
+def get_formated_headers_and_texts(enumerate):
+    # 1. Get items
+    time_stamps, headers, texts = fetch_items(url)
+
+    # 2. Get last displayed time/date stamp
+    last_seen_time_stamp = None
+    if os.path.isfile("last_seen_time_stamp.yaml"):
+        last_seen_time_stamp_str = yaml.safe_load(open("last_seen_time_stamp.yaml"))
+        _ = last_seen_time_stamp_str.replace('Z', '+00:00')
+        last_seen_time_stamp = datetime.fromisoformat(_)
+
+    # 3. Get the headers+texts not-skipped by keywork + more recent than time stamp
+    formated_headers =  []
+    formated_texts = []
+    for i in range(len(time_stamps)-1,-1,-1):
+        time_stamp_str = time_stamps[i]
+        time_stamp = datetime.fromisoformat(time_stamp_str.replace('Z', '+00:00'))
+        if last_seen_time_stamp:
+            if time_stamp<last_seen_time_stamp:
+                continue
+        if is_skip(headers[i], to_exclude): 
+            continue
+        local_time = time_stamp.astimezone()
+        time_stamp_disp = local_time.strftime("%d%b %H:%M")
+        header = RTL_START+ headers[i] +RTL_END
+        formated_headers.append(str(i+1).rjust(2) +" "+ time_stamp_disp +" "+ header)
+        formated_texts.append(texts[i])
+    formated_headers.append(f'Fetched: {datetime.now().strftime("%d%b %H:%M")}')
+    formated_texts.append("")
+
+    # 4. Save time stamp
+    yaml.safe_dump(time_stamps[0], open("last_seen_time_stamp.yaml", 'w'))
+    return formated_headers, formated_texts
 
 
 

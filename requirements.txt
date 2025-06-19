@@ -2,3 +2,4 @@ pyYaml
 bs4
 requests
 python-bidi
+textual
