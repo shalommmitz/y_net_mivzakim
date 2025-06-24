@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+from typing import List
+
+from fetch_items import fetch_items, get_formated_headers_and_texts
+from display_heb_on_term import display_rtl_on_terminal
+
+RTL_START = u'\u202B'
+RTL_END = u'\u202C'
+
+
+def print_text(user_input: str, texts: List[str]) -> None:
+    """
+    Displays the selected text(s) from a list based on user input.
+
+    Args:
+        user_input (str): A string containing either a single number or comma-separated numbers
+                          representing indices of the items to display (1-based indexing).
+        texts (List[str]): The list of full texts to select from.
+    """
+    def p(item_num: str) -> None:
+        item_num = item_num.strip()
+        if item_num == "":
+            return
+        i = int(item_num)
+        index_of_last_item = len(texts)-1 # The last item is the fetch timestamp 
+        if 0 <= i < len(texts):
+            display_rtl_on_terminal(texts[index_of_last_item-i])
+
+    if "," in user_input:
+        for item_num in user_input.split(","):
+            p(item_num)
+    else:
+        p(user_input)
+
+
+def fetch_and_display_headers() -> List[str]:
+    """
+    Fetches formatted headers and texts, displays the headers,
+    and returns the list of full texts.
+
+    Returns:
+        List[str]: The list of full formatted texts corresponding to the headers.
+    """
+    formated_headers, formated_texts = get_formated_headers_and_texts()
+    for  header in formated_headers:
+        print(header)
+    return formated_texts
+
+
+if __name__ == "__main__":
+    # Fetch all data, display headers and get full texts
+    texts: List[str] = fetch_and_display_headers()
+
+    # Interact with the user
+    print("Commands: Num of item, numbers separated by commas, 'Enter' to refresh or q to exit")
+    prompt = " > "
+    ans: str = input(prompt)
+
+    while True:
+        match ans:
+            case "q":
+                exit()
+            case "":
+                texts = fetch_and_display_headers()
+            case _:
+                print_text(ans, texts)
+        ans: str = input(prompt)
