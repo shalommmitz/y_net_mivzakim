@@ -1,13 +1,12 @@
 # y_net_mivzakim
 
-A Python utility to fetch and process news headlines ("מבזקים") from the ynet's site. Designed for quick and structured access to the most recent headlines, optionally filtering out irrelevant ones based on exclusion terms.
+A pure terminal utility to fetch and display news headlines ("מבזקים") from the ynet's site. Designed for quick and structured access to the most recent headlines, optionally filtering out irrelevant ones based on exclusion terms. Items are shown only once ! For the terminal lovers.
 
 ## Features
 
 - Downloads the latest headlines
 - Filters out unwanted headlines using user-defined keywords
-- Command-line interface to see more details on choosen items
-- Customizable exclusion terms list
+- TUI or pure Command-line interfaces to see more details on chosen items
 
 ## Installation
 
@@ -22,7 +21,7 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
 
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   . venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
 
 3. Install dependencies:
@@ -31,7 +30,7 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
    pip install -r requirements.txt
    ```
 
-## Usage
+## Using the "Elegant TUI" version:
 
 1. Make sure you're inside the project directory:
 
@@ -39,32 +38,74 @@ A Python utility to fetch and process news headlines ("מבזקים") from the y
    cd y_net_mivzakim
    ```
 
-2. Run the main script:
+2. Activate the virtual environment:
 
    ```bash
-   python3 ynet_mivzakim.py
+   . v
+   ```
+   
+3. Run the main script:
+
+   ```bash
+   ./mivzakim
    ```
 
-3. The items not-yet-seen will be displayed. At the prompt, you can do one of the following: 
+   The items not-yet-seen will be displayed.
+
+4. Click on the down-arrow next to each item to see the full text
+
+5. Press 'r' to refresh. Press 'q' to quit
+
+   Or just click with your mouse. Yes, on terminal. And yes, you can SSH it :)
+
+## Using the "Pure CLI" version:
+
+1. Make sure you're inside the project directory:
+
+   ```bash
+   cd y_net_mivzakim
+   ```
+
+2. Activate the virtual environment:
+
+   ```bash
+   . v
+   ```
+   
+3. Run the main script:
+
+   ```bash
+   ./mivzakim_cli
+   ```
+  
+   or
+   ```bash
+   python mivzakim_cli
+   ```
+
+4. The items not-yet-seen will be displayed.  
+
+5. Interaction with the sw:
+
+   At the prompt, you can do one of the following:
 
    - Hit "Enter" to refresh
-   - Enter a list of item-number (coma separed) to see details.
+   - Enter a list of item-number(s) (comma separated) to see details or the requested items.
    - `q` to quit
 
 ## Configuration: Exclude Terms
 
-To filter out certain types of news, add exclusion terms to `exclude.txt`, one per line. Example:
+To filter out certain types of news, add exclusion terms to the file `terms_to_exclude.txt`, one per line. Example:
 
 ```
 ספורט
 פרסומת
-פאניקה
-מזג האוויר
+NBA
 ```
 
 These terms will be matched (case-sensitive) against the headlines.
 
-## Typical Flow
+## An example of the installation and launch steps
 
 ```bash
 git clone https://github.com/shalommmitz/y_net_mivzakim.git
@@ -72,13 +113,12 @@ cd y_net_mivzakim
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 ynet_mivzakim.py
-cat headlines.txt
+python3 mivzakim
 ```
 
 ## License
 
-MIT License. See `LICENSE` file for details.
+MIT License. See [LICENSE](LICENSE ) file for details.
 
 ## Contributing
 

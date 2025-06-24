@@ -15,6 +15,8 @@ from display_heb_on_term import get_text_as_lines
 
 url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
 
+def log(txt):
+    open("log.txt", 'a').write(f"{txt}\n").close()
 
 class Mivzakim(App):
 
@@ -22,6 +24,16 @@ class Mivzakim(App):
         ("q", "quit", "Quit"),
         ("r", "refresh", "Refresh"),
         ("c", "clear", "Clear"),
+        ("1", "expand_1", "Show item 1 "),
+        ("-", "", " "),
+        ("2", "expand_2", ""),
+        ("3", "expand_3", ""),
+        ("4", "expand_4", ""),
+        ("5", "expand_5", ""),
+        ("6", "expand_6", ""),
+        ("7", "expand_7", ""),
+        ("8", "expand_8", ""),
+        ("9", "expand_9", "Show item 9"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -32,17 +44,21 @@ class Mivzakim(App):
 
     def on_mount(self) -> None:
         """Get items when the app starts."""
-        #time_stamps, headers, texts = fetch_items(url)
-        #self.json_data = { "time_stams": time_stamps, "headers": headers, "texts": texts }
-        formated_headers, formated_texts = get_formated_headers_and_texts(enumerate=False)
+        formated_headers, formated_texts = get_formated_headers_and_texts()
         tree = self.query_one(Tree)
+        tree.clear()
         for idx, header in enumerate(formated_headers):
-           node = tree.root.add(header)
-           text_lines = get_text_as_lines(formated_texts[idx], 60)
-           for line in text_lines:
-               node.add_leaf(line)
+           #if idx ==len(formated_headers)-1:
+           if False:
+               tree.root.add_leaf(header)
+           else:
+               node = tree.root.add(header)
+               text_lines = get_text_as_lines(formated_texts[idx], 60)
+               for line in text_lines:
+                   node.add_leaf(line)
         tree.show_root = False
         tree.show_guides = False
+        tree.scroll_end(animate=False)
 
 
     def action_quit(self) -> None:
@@ -53,6 +69,7 @@ class Mivzakim(App):
         """Clear the tree (remove all nodes)."""
         tree = self.query_one(Tree)
         tree.clear()
+        node = tree.root.add("Fetching items...")
         self.on_mount()
 
     def action_clear(self) -> None:
@@ -60,7 +77,32 @@ class Mivzakim(App):
         tree = self.query_one(Tree)
         tree.clear()
 
+    def action_expand_1(self) -> None:
+        self.expand(1)
+    def action_expand_2(self) -> None:
+        self.expand(2)
+    def action_expand_3(self) -> None:
+        self.expand(3)
+    def action_expand_4(self) -> None:
+        self.expand(4)
+    def action_expand_5(self) -> None:
+        self.expand(5)
+    def action_expand_6(self) -> None:
+        self.expand(6)
+    def action_expand_7(self) -> None:
+        self.expand(7)
+    def action_expand_8(self) -> None:
+        self.expand(8)
+    def action_expand_9(self) -> None:
+        self.expand(9)
+    def expand(self, n):
+        tree = self.query_one(Tree)
+        node = tree.root.children[len(tree.root.children)-1-n]
+        node.toggle()
+        tree.cursor_line = tree.last_line
+
 
 if __name__ == "__main__":
     app = Mivzakim()
     app.run()
+    #print(open("log.txt").read())
