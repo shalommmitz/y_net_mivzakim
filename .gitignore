@@ -1,1 +1,4 @@
 __pycache__/
+*time_stamp.yaml
+terms_to_exclude.txt
+venv/
