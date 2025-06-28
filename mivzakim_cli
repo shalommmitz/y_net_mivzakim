@@ -3,11 +3,7 @@
 from typing import List
 
 from fetch_items import fetch_items, get_formated_headers_and_texts
-from display_heb_on_term import display_rtl_on_terminal
-
-RTL_START = u'\u202B'
-RTL_END = u'\u202C'
-
+from display_rtl_text import send_to_terminal
 
 def print_text(user_input: str, texts: List[str]) -> None:
     """
@@ -25,7 +21,7 @@ def print_text(user_input: str, texts: List[str]) -> None:
         i = int(item_num)
         index_of_last_item = len(texts)-1 # The last item is the fetch timestamp 
         if 0 <= i < len(texts):
-            display_rtl_on_terminal(texts[index_of_last_item-i])
+            send_to_terminal(texts[index_of_last_item-i])
 
     if "," in user_input:
         for item_num in user_input.split(","):

@@ -10,7 +10,7 @@ from textual.widgets import Header, Footer, Tree
 from textual.widgets.tree import TreeNode
 
 from fetch_items import fetch_items, get_formated_headers_and_texts
-from display_heb_on_term import get_text_as_lines
+from display_rtl_text import get_text_as_lines
 
 
 url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")

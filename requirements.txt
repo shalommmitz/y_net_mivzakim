@@ -1,7 +1,7 @@
 pyYaml
 bs4
 requests
-python-bidi
+pyIcu
 textual
 pytest
 coverage

@@ -27,6 +27,7 @@ A pure terminal utility to fetch and display news headlines ("מבזקים") fro
 3. Install dependencies:
 
    ```bash
+   sudo apt install libicu-dev
    pip install -r requirements.txt
    ```
 
