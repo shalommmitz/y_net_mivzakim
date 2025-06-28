@@ -14,6 +14,8 @@ RTL_END = u'\u202C'
 url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
 
 # Load exclusion terms from file
+if not os.path.isfile("terms_to_exclude.txt"):
+    os.system("touch terms_to_exclude.txt")
 _ = open("terms_to_exclude.txt", encoding="utf-8").read().split("\n")
 _ = [term.strip() for term in _]
 to_exclude = [term for term in _ if term != ""]

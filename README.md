@@ -22,12 +22,14 @@ A pure terminal utility to fetch and display news headlines ("מבזקים") fro
    ```bash
    python3 -m venv venv
    . venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   or: . v
    ```
 
 3. Install dependencies:
 
    ```bash
    sudo apt install libicu-dev
+   pip install -U pip wheel setuptools
    pip install -r requirements.txt
    ```
 
