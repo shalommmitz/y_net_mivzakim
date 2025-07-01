@@ -1,0 +1,3 @@
+pytest test_display_heb_on_term.py --maxfail=1 --disable-warnings --tb=short
+coverage run -m pytest
+coverage report -m
