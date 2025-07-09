@@ -108,7 +108,9 @@ NBA
 
 These terms will be matched (case-sensitive) against the headlines.
 
-## An example of the installation and launch steps
+## An example of the Installation and Launch Steps
+
+The procedure below will work on Ubuntu Linux.
 
 ```bash
 git clone https://github.com/shalommmitz/y_net_mivzakim.git
@@ -116,7 +118,8 @@ cd y_net_mivzakim
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 mivzakim
+chmod +x mivzakim
+./mivzakim
 ```
 
 ## License
