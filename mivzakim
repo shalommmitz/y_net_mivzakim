@@ -16,8 +16,8 @@ def log(txt):
 class Mivzakim(App):
 
     BINDINGS = [
-        ("q", "quit", "Quit"),
         ("r", "refresh", "Refresh"),
+        ("q", "quit", "Quit"),
         ("c", "clear", "Clear"),
         ("1", "expand_1", "Show item 1 "),
         ("-", "", " "),
@@ -42,15 +42,13 @@ class Mivzakim(App):
         formated_headers, formated_texts = get_formated_headers_and_texts()
         tree = self.query_one(Tree)
         tree.clear()
+        width = 63
         for idx, header in enumerate(formated_headers):
-           #if idx ==len(formated_headers)-1:
-           if False:
-               tree.root.add_leaf(header)
-           else:
-               node = tree.root.add(header)
-               text_lines = get_text_as_lines(formated_texts[idx], 60)
-               for line in text_lines:
-                   node.add_leaf(line)
+           node = tree.root.add(header)
+           text_lines = get_text_as_lines(formated_texts[idx], width)
+           for line in text_lines:
+               line = " "*((width+3)-len(line)) + line   # Allign text right
+               node.add_leaf(line)
         tree.show_root = False
         tree.show_guides = False
         tree.scroll_end(animate=False)
