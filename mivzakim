@@ -38,9 +38,17 @@ class Mivzakim(App):
 
 
     def on_mount(self) -> None:
-        """Get items when the app starts."""
-        formated_headers, formated_texts = get_formated_headers_and_texts()
+        """Get items when the app starts, and displays on the tree"""
         tree = self.query_one(Tree)
+        tree.show_root = False
+        tree.show_guides = False
+        tree.clear()
+        node = tree.root.add("Fetching items...")
+        try:
+            formated_headers, formated_texts = get_formated_headers_and_texts()
+        except:
+            node = tree.root.add("Error fetching items")
+            return
         tree.clear()
         width = 63
         for idx, header in enumerate(formated_headers):
@@ -49,8 +57,6 @@ class Mivzakim(App):
            for line in text_lines:
                line = " "*((width+3)-len(line)) + line   # Allign text right
                node.add_leaf(line)
-        tree.show_root = False
-        tree.show_guides = False
         tree.scroll_end(animate=False)
 
 
@@ -59,10 +65,6 @@ class Mivzakim(App):
         exit()
         
     def action_refresh(self) -> None:
-        """Clear the tree (remove all nodes)."""
-        tree = self.query_one(Tree)
-        tree.clear()
-        node = tree.root.add("Fetching items...")
         self.on_mount()
 
     def action_clear(self) -> None:
