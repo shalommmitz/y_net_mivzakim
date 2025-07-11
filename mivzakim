@@ -11,7 +11,7 @@ from display_rtl_text import get_text_as_lines
 url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
 
 def log(txt):
-    open("log.txt", 'a').write(f"{txt}\n").close()
+    open("log.txt", 'a').write(f"{txt}\n")
 
 class Mivzakim(App):
 
@@ -55,7 +55,9 @@ class Mivzakim(App):
            node = tree.root.add(header)
            text_lines = get_text_as_lines(formated_texts[idx], width)
            for line in text_lines:
-               line = " "*((width+3)-len(line)) + line   # Allign text right
+               line = line[0] + line[1:-1].strip() + line[-1] # Strip space char at start of line that causes wrong right-alligment, while preserving RTL codes
+               line_len = len(line)
+               line = " "*((width+3)-line_len) + line   # Allign text right
                node.add_leaf(line)
         tree.scroll_end(animate=False)
 
