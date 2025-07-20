@@ -1,7 +1,4 @@
-import pytest
-from bidi.algorithm import get_display
 import builtins
-import types
 
 import sys
 sys.path.insert(0, "..")
@@ -36,7 +33,7 @@ def test_reverse_LTR():
     input_text = ltr + nat + rtl + nat + ltr
     reversed_text = mod.reverse_LTR(input_text)
     assert ltr in reversed_text
-    assert not rtl in reversed_text
+    assert rtl not in reversed_text
 
 def test_get_text_as_lines_simple():
     input_text = "abc אבג 123"

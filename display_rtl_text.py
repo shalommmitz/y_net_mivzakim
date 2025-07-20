@@ -103,14 +103,22 @@ def get_char_type(c: str) -> str:
     """
 
     o = ord(c)
-    if 32 <= o <= 47: return "natrual"
-    if 48 <= o <= 57: return "LTR"
-    if 58 <= o <= 64: return "natrual"
-    if 65 <= o <= 90: return "LTR"
-    if 91 <= o <= 96: return "natrual"
-    if 97 <= o <= 122: return "LTR"
-    if 123 <= o <= 126: return "natrual"
-    if 0x5D0 <= o <= 0x5EA: return "RTL"
+    if 32 <= o <= 47: 
+        return "natrual"
+    if 48 <= o <= 57: 
+        return "LTR"
+    if 58 <= o <= 64: 
+        return "natrual"
+    if 65 <= o <= 90: 
+        return "LTR"
+    if 91 <= o <= 96: 
+        return "natrual"
+    if 97 <= o <= 122: 
+        return "LTR"
+    if 123 <= o <= 126: 
+        return "natrual"
+    if 0x5D0 <= o <= 0x5EA: 
+        return "RTL"
     return "natrual"
 
 
@@ -140,5 +148,5 @@ def send_to_terminal(text: str) -> None:
 
 if __name__ == "__main__":
     sample = ( "אבג")
-    for l in get_text_as_lines(sample, 50):
-        print(l)
+    for text in get_text_as_lines(sample, 50):
+        print(text)

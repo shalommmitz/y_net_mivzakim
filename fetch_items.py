@@ -5,7 +5,7 @@ import yaml
 import requests
 import json
 from datetime import datetime
-from typing import List, Tuple, Any, Union
+from typing import List, Tuple, Any
 from bs4 import BeautifulSoup
 
 RTL_START = u'\u202B'
@@ -118,13 +118,13 @@ def html_to_dict(url: str) -> dict:
     return parse_tag(soup)
 
 
-def interactive_explorer_of_data_struct(d: Any, l: int, path: List[str]) -> None:
+def interactive_explorer_of_data_struct(d: Any, level: int, path: List[str]) -> None:
     """
     Allows interactive exploration of a nested data structure (HTML parsed as dicts/lists).
     This code is used for exploration of the page strcture and is not in use during normal runs.
     Args:
         d (Any): The current element of the data structure.
-        l (int): Current depth level.
+        level (int): Current depth level.
         path (List[str]): Path to the current element.
     """
     path_printable = ", ".join(path)
@@ -135,10 +135,10 @@ def interactive_explorer_of_data_struct(d: Any, l: int, path: List[str]) -> None
             print(f"   '{d}'")
         case "list":
             def get_ans(d: list) -> str:
-                print(f'Level {l}. type {type_of_d}. Path {path_printable}')
+                print(f'Level {level}. type {type_of_d}. Path {path_printable}')
                 print("   len", len(d))
                 for i, item in enumerate(d):
-                    if type(item)==type({}):
+                    if type(item) is dict:
                         if "tag" in item.keys():
                             print("   ", i + 1, item["tag"], len(str(item)))
                 return input("num of element (start w/1) or 'Enter' to return > ")
@@ -146,12 +146,12 @@ def interactive_explorer_of_data_struct(d: Any, l: int, path: List[str]) -> None
             ans = get_ans(d)
             while ans != '':
                 new_path = path + [str(int(ans) - 1)]
-                interactive_explorer_of_data_struct(d[int(ans) - 1], l + 1, new_path)
+                interactive_explorer_of_data_struct(d[int(ans) - 1], level + 1, new_path)
                 ans = get_ans(d)
 
         case "dict":
             def get_ans(keys: List[str]) -> str:
-                print(f'Level {l}. type {type_of_d}. Path {path_printable}')
+                print(f'Level {level}. type {type_of_d}. Path {path_printable}')
                 print("keys:")
                 for idx, key in enumerate(keys):
                     print("   ", idx + 1, key)
@@ -170,7 +170,7 @@ def interactive_explorer_of_data_struct(d: Any, l: int, path: List[str]) -> None
                     case _:
                         key = keys[int(ans) - 1]
                         new_path = path + [f'"{key}"']
-                        interactive_explorer_of_data_struct(d[key], l + 1, new_path)
+                        interactive_explorer_of_data_struct(d[key], level + 1, new_path)
                 ans = get_ans(keys)
 
         case _:
@@ -199,9 +199,10 @@ def fetch_items(url: str) -> Tuple[List[str], List[str], List[str]]:
     for p in path:
         try:
             html_dict = html_dict[p]
-        except:
+        except Exception as e:
             print(f"ERROR: could not get {p} from html_dict.")
             print("html_dict:", html_dict)
+            print(e)
             exit()
 
     ### Uncomment the below two lines to do manual exploration of the path
@@ -217,15 +218,15 @@ def fetch_items(url: str) -> Tuple[List[str], List[str], List[str]]:
     for item in items:
         try:
             time_stamps.append(item["date"])
-        except:
-            print("Getting time stamp failed")
+        except Exception as e:
+            print("Getting time stamp failed", e)
         try:
             headers.append(item["title"])
-        except:
-            print("Failed to get title")
+        except Exception as e:
+            print("Failed to get title", e)
         try:
             texts.append(item["text"])
-        except:
-            print("Failed to get text")
+        except Exception as e:
+            print("Failed to get text", e)
 
     return time_stamps, headers, texts
