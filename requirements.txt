@@ -5,3 +5,4 @@ pyIcu
 textual
 pytest
 coverage
+ruff
