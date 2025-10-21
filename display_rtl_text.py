@@ -82,6 +82,9 @@ def get_text_as_lines(text: str, term_width: int) -> List[str]:
     -------
     List[str]          Ready‑to‑print lines.
     """
+    if text.startswith("https://"):
+        # URLs are not split, so they can be copy/paste into the browser
+        return [ text ]
     if term_width <= 0:
         raise ValueError("term_width must be > 0")
 

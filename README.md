@@ -28,7 +28,7 @@ A pure terminal utility to fetch and display news headlines ("מבזקים") fro
 3. Install dependencies:
 
    ```bash
-   sudo apt install pkg-config python3-dev libicu-dev
+   sudo apt install pkg-config python3-dev libicu-dev xclip
    pip install -U pip wheel setuptools
    pip install -r requirements.txt
    ```
