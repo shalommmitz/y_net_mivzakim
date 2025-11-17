@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+from textual.app import App, ComposeResult
+from textual.widgets import Header, Footer, Tree
+from textual.widgets.tree import TreeNode
+from textual import work
+
+import traceback
+from fetch_items import fetch_items, get_formated_headers_and_texts
+from display_rtl_text import get_text_as_lines
+from datetime import datetime
+import subprocess
+import time
+import webbrowser
+
+url = 'https://www.y net.co.il/news/category/184'.replace(" ", "")
+
+def log(txt):
+    time_stamp = datetime.now().strftime("%d_%H:%M.%S")
+    open("log.txt", 'a').write(f"{time_stamp} {txt}\n")
+
+class Mivzakim(App):
+
+    BINDINGS = [
+        ("r", "refresh", "Refresh"),
+        ("q", "quit", "Quit"),
+        ("i", "insert_into_terms", ""),
+        ("c", "copy", "Copy"),
+        ("l", "launch_url", "Launch URL"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        yield Header(show_clock=True)
+        yield Footer()
+        yield Tree("Mivzakim")
+
+
+    def on_mount(self) -> None:
+        """Get items when the app starts, and displays on the tree"""
+        tree = self.query_one(Tree)
+        tree.show_root = False
+        tree.show_guides = False
+        tree.clear()
+        # Add initial placeholder node
+        self.fetching_node = tree.root.add("🔄 Fetching items...")
+        self.refresh()
+
+        # Defer data fetching until after screen is drawn
+        self.call_after_refresh(self.load_data_into_tree)
+    def handle_exception(self, e, tree):
+        tree.clear()
+        # Add error node with traceback
+        error_node = tree.root.add("❌ Error fetching items (Expand node for details)")
+        tb_lines = traceback.format_exception(e)
+        for line in tb_lines:
+            for sub_line in line.rstrip().splitlines():
+                error_node.add_leaf(sub_line)       
+        tree.scroll_end(animate=False)
+    def add_to_tree(self, tree, formated_headers, formated_texts):
+        width = 63
+        for idx, header in enumerate(formated_headers):
+           node = tree.root.add(header)
+           text_lines = get_text_as_lines(formated_texts[idx], width)
+           for line in text_lines:
+               # Strip space char at start of line that causes wrong right-alligment, while preserving RTL codes
+               line = line[0] + line[1:-1].strip() + line[-1]
+               line_len = len(line)
+               line = " "*((width+3)-line_len) + line   # Allign text right
+               node.add_leaf(line)
+
+
+
+    @work(exclusive=True, thread=True)
+    def load_data_into_tree(self) -> None:
+        """Background task to fetch data and update the tree."""
+        tree = self.query_one(Tree)
+        try:
+            formated_headers, formated_texts = get_formated_headers_and_texts()
+        except Exception as e:
+            self.handle_exception(self, e, tree)
+            return
+
+        tree.clear()
+        self.add_to_tree(tree, formated_headers, formated_texts)
+        tree.scroll_end(animate=False)
+
+
+    def action_quit(self) -> None:
+        """Quit the program."""
+        exit()
+        
+    def action_refresh(self) -> None:
+        self.on_mount()
+
+    def action_insert_into_terms(self) -> None:
+        """inserets the current header into the terms_to_exclude file"""
+        tree = self.query_one(Tree)
+        selected_text = str(tree.cursor_node.label)[16:-1]
+        open("terms_to_exclude.txt", 'a').write(selected_text+"\n")
+
+    def action_copy(self) -> None:
+        """copy the current line to the clipboard"""
+        tree = self.query_one(Tree)
+        txt = str(tree.cursor_node.label)
+        subprocess.run('xclip -selection clipboard', input=txt.encode(), shell=True)
+
+    def action_launch_url(self) -> None:
+        tree = self.query_one(Tree)
+        url_candidate = tree.cursor_node.children[0]
+        webbrowser.open(str(url_candidate.label))
+
+if __name__ == "__main__":
+    app = Mivzakim()
+    app.run()
+    #print(open("log.txt").read())
