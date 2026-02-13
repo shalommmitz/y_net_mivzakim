@@ -4,7 +4,8 @@ import os
 import yaml
 import requests
 import json
-from datetime import datetime
+import time
+from datetime import datetime, timezone
 from typing import List, Tuple, Any, Union
 from bs4 import BeautifulSoup
 from generate_terms_to_exclude import generate_terms_iterations_file
@@ -51,12 +52,24 @@ def get_formated_headers_and_texts() -> Tuple[List[str], List[str]]:
     Returns:
         Tuple[List[str], List[str]]: A tuple of formatted headers and corresponding text content.
     """
-    # 1. Get items
-    time_stamps, headers, texts = fetch_items(url)
-    ts, h, t = fetch_google_items()
-    time_stamps += ts
-    headers += h
-    texts += t
+
+   # 1. Fetch Ynet + Google items
+    y_ts, y_h, y_t = fetch_items(url)
+    g_ts, g_h, g_t = fetch_google_items()
+
+    # Build combined list of items
+    items = []
+    for dt, title, txt in zip(y_ts, y_h, y_t):
+        # attach UTC tz to Ynet ISO dates
+        dt_obj = datetime.fromisoformat(dt.replace('Z', '+00:00'))
+        items.append((dt_obj, title, txt))
+    for dt, title, txt in zip(g_ts, g_h, g_t):
+        # feedparser published_parsed is UTC
+        dt_obj = datetime.fromtimestamp(time.mktime(dt.timetuple()), tz=timezone.utc)
+        items.append((dt_obj, title, txt))
+
+    # Sort items newest → oldest
+    items.sort(key=lambda x: x[0], reverse=True)
 
     # 2. Get last displayed time/date stamp
     last_seen_time_stamp = None
@@ -64,37 +77,37 @@ def get_formated_headers_and_texts() -> Tuple[List[str], List[str]]:
         last_seen_time_stamp_str = yaml.safe_load(open("last_seen_time_stamp.yaml"))
         _ = last_seen_time_stamp_str.replace('Z', '+00:00')
         last_seen_time_stamp = datetime.fromisoformat(_)
-        last_seen_time_stamp = last_seen_time_stamp.replace(tzinfo=None)
+        last_seen_time_stamp = last_seen_time_stamp.replace(tzinfo=timezone.utc)
 
-    # 3. Get the headers+texts not-skipped by keywork + more recent than time stamp
-    formated_headers =  []
+    items.reverse()   # We want the most recent item to be the last
+
+    formated_headers = []
     formated_texts = []
-    for i in range(len(time_stamps) - 1, -1, -1):
-        time_stamp = time_stamps[i]
-        if isinstance(time_stamp, str):
-            time_stamp = datetime.fromisoformat(time_stamp.replace('Z', '+00:00'))
-        time_stamp = time_stamp.replace(tzinfo=None)
-        if last_seen_time_stamp and time_stamp < last_seen_time_stamp:
+    for dt_obj, title, txt in items:
+        # Skip older than last seen
+        if last_seen_time_stamp and dt_obj < last_seen_time_stamp:
             continue
-        if is_skip(headers[i], to_exclude):
+
+        # Convert properly to local timezone
+        local_dt = dt_obj.astimezone()  # system local
+        time_stamp_disp = local_dt.strftime("%d%b %H:%M")
+
+        # Apply exclusion terms
+        if is_skip(title, to_exclude):
             continue
-        local_time = time_stamp.astimezone()
-        time_stamp_disp = local_time.strftime("%d%b %H:%M")
-        header = RTL_START + headers[i] + RTL_END
-
-        SHOW_ITEM_NUMS = False
-
-        if SHOW_ITEM_NUMS: header = str(i + 1).rjust(2) + " " + header
+        header = RTL_START + title + RTL_END
         header = time_stamp_disp + " " + header
         formated_headers.append(header)
-        formated_texts.append(texts[i])
+        formated_texts.append(txt)
+
     formated_headers.append(f'Fetched: {datetime.now().strftime("%d%b %H:%M")}')
     formated_texts.append("")
 
     # 4. Save time stamp
     if os.path.isfile("last_seen_time_stamp.yaml"):
         os.rename("last_seen_time_stamp.yaml", "previous_time_stamp.yaml")
-    yaml.safe_dump(time_stamps[0], open("last_seen_time_stamp.yaml", 'w'))
+    last_seen_time_stamp = items[-1][0]
+    yaml.safe_dump(str(last_seen_time_stamp), open("last_seen_time_stamp.yaml", 'w'))
 
     return formated_headers, formated_texts
 
