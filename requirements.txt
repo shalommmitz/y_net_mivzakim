@@ -1,0 +1,7 @@
+pyYaml
+bs4
+requests
+pyIcu
+textual
+pytest
+coverage
