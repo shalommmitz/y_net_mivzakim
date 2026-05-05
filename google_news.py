@@ -4,9 +4,13 @@ import os
 import time
 import datetime
 import shutil
+from urllib.parse import quote
 
 # RSS feed for "starship" on Google News
-RSS_FEED_URL = "https://news.google.com/rss/search?q=starship"
+RSS_FEED = 'https://news.google.com/rss/search?q=starship -"star trek" -"starship troopers" -"starship hospital" -"Jefferson starship"'
+RSS_FEED_URL = RSS_FEED.replace(" ", "%20").replace('"', "%22")
+
+#RSS_FEED_URL = quote(RSS_FEED)
 
 # File to store seen article hashes
 SEEN_FILE = "seen_articles.txt"

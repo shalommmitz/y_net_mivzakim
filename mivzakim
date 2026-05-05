@@ -76,7 +76,7 @@ class Mivzakim(App):
         try:
             formated_headers, formated_texts = get_formated_headers_and_texts()
         except Exception as e:
-            self.handle_exception(self, e, tree)
+            self.handle_exception(e, tree)
             return
 
         tree.clear()
